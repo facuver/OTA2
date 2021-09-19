@@ -1,4 +1,4 @@
-import network, machine
+import network, machine, gc
 
 from ota_updater import OTAUpdater
 
@@ -12,10 +12,13 @@ while not sta_if.isconnected():
 print("Connected")
 
 otaUpdater = OTAUpdater(
-    "https://github.com/facuver/OTA2",
-    github_src_dir="src",
-    main_dir="",
+    "https://github.com/rdehuyss/micropython-ota-updater",
+    main_dir="app",
     secrets_file="secrets.py",
 )
-otaUpdater.install_update_if_available()
-del otaUpdater
+hasUpdated = otaUpdater.install_update_if_available()
+if hasUpdated:
+    machine.reset()
+else:
+    del otaUpdater
+    gc.collect()
