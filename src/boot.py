@@ -1,8 +1,7 @@
 import network, machine
-import senko
 
-GITHUB_URL = "https://raw.githubusercontent.com/facuver/OTA2/test/src"
-OTA = senko.Senko(url=GITHUB_URL, files=["boot.py", "main.py"])
+from ota_updater import OTAUpdater
+
 
 sta_if = network.WLAN(network.STA_IF)
 sta_if.active(True)
@@ -12,6 +11,11 @@ while not sta_if.isconnected():
     pass
 print("Connected")
 
-if OTA.update():
-    print("Updated to the latest version! Rebooting...")
-    machine.reset()
+otaUpdater = OTAUpdater(
+    "https://github.com/facuver/OTA2",
+    github_src_dir="src",
+    main_dir="",
+    secrets_file="secrets.py",
+)
+otaUpdater.install_update_if_available()
+del otaUpdater
